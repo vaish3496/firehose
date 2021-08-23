@@ -126,8 +126,11 @@ public abstract class AbstractHttpSink extends AbstractSink {
     }
 
     private void printResponse(HttpResponse response) throws IOException {
-        String responseBody = EntityUtils.toString(response.getEntity());
-        getInstrumentation().logDebug("Response Body: {}", responseBody);
+        InputStream inputStream = response.getEntity().getContent();
+        String entireRequest = String.format("Response Body: %s",
+                Strings.join(readContent(inputStream), "\n"));
+        getInstrumentation().logDebug(entireRequest);
+        inputStream.reset();
     }
 
     protected abstract List<String> readContent(InputStream inputStream) throws IOException;
